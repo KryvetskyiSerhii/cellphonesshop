@@ -56,7 +56,7 @@ let itemsArray = [{
         name: 'Samsung Galaxy S21',
         price: 999,
         id: '8',
-        img: 'img/phones/galaxyS21.jpg',
+        img: 'img/phones/galaxys21.jpg',
     },
     {
         name: 'Samsung Galaxy Z Flip',
@@ -147,10 +147,11 @@ for (let i = 1; i <= totalPages; i++) {
 
 createPagination(totalPages)
 createItem(items[0])
-
+createPaginationItem()
 
 const cart = document.querySelectorAll('.item-phones__cart')
 
+function createPaginationItem () {
 items.forEach ( item => {
     item.addEventListener('click', function () {
         createItem(this)
@@ -159,10 +160,28 @@ items.forEach ( item => {
         const start = (pageNum - 1) * perPage
         const end = start + perPage
         const activeList = itemsArray.slice(start, end)
-        createCartItem(cart, activeList)
+        createCartItem(cart, activeList, activeList)
     })
 
 })
+}
+
+function itemHTML(item) {
+    return `<div class="phones__item item-phones">
+    <div class="item-phones__wrapper">
+        <div class="item-phones__image">
+            <img src="${item.img}" alt="">
+        </div>
+        <div class="item-phones__content">
+            <div class="item-phones__name">${item.name}</div>
+            <div class="item-phones__price">${item.price}$</div>
+        </div>
+        <div class="item-phones__cart" data-id="20">
+            <img src="img/bag.png" alt="bag">
+        </div>
+    </div>
+</div>`
+}
 
 function createItem(item) {
     const pageNum = parseInt(item.innerHTML)
@@ -176,30 +195,19 @@ function createItem(item) {
     item.classList.add('active')
     field.innerHTML = ''
     activeList.forEach(note => {
-        field.innerHTML += `<div class="phones__item item-phones">
-        <div class="item-phones__wrapper">
-            <div class="item-phones__image">
-                <img src="${note.img}" alt="">
-            </div>
-            <div class="item-phones__content">
-                <div class="item-phones__name">${note.name}</div>
-                <div class="item-phones__price">${note.price}$</div>
-            </div>
-            <div class="item-phones__cart" data-id="20">
-                <img src="img/bag.png" alt="bag">
-            </div>
-        </div>
-    </div>`
+        field.innerHTML += itemHTML(note)
     })
 }
 
-function createCartItem(cart, itemList)
-for (let i = 0; i < cart.length; i++) {
+ 
+function createCartItem(cart, itemList, arrayList){
+    const cart = document.querySelectorAll('.item-phones__cart')
+    for (let i = 0; i < cart.length; i++) {
     cart[i].addEventListener('click', () => {
         addToCart(itemList[i])
         const liTag = document.createElement('li')
         liTag.classList.add('modal__list-item')
-        liTag.setAttribute('id', activeList[i].id)
+        liTag.setAttribute('id', arrayList[i].id)
         liTag.innerHTML = `<div class="modal__block">
         <div class="modal__image">
             <img src="${itemList[i].img}" alt="">
@@ -213,8 +221,9 @@ for (let i = 0; i < cart.length; i++) {
         modalList.appendChild(liTag)
    })
 }
+}
 
-createCartItem(cart, itemsArray)
+createCartItem(cart, itemsArray, itemsArray)
 
 
 // modal
@@ -247,7 +256,17 @@ let searchResult =''
 
 searchField.addEventListener('input', e => {
     searchResult = e.target.value
+    if (searchResult == '') {
+        element.innerHTML = ''
+        createPagination(totalPages)
+        createPaginationItem()
+        field.innerHTML = ''
+        createItem(items[0])
+        createCartItem(cart, itemsArray, itemsArray)
+    }
+    else {
     showSearchResult()
+    }
 })
 
 function showSearchResult () {
@@ -256,19 +275,6 @@ function showSearchResult () {
     let totalPages = Math.ceil(filteredItems.length / perPage)
     element.innerHTML = ''
     createPagination(totalPages)
-    filteredItems.forEach(element => { field.innerHTML += `<div class="phones__item item-phones">
-    <div class="item-phones__wrapper">
-        <div class="item-phones__image">
-            <img src="${element.img}" alt="">
-        </div>
-        <div class="item-phones__content">
-            <div class="item-phones__name">${element.name}</div>
-            <div class="item-phones__price">${element.price}$</div>
-        </div>
-        <div class="item-phones__cart" data-id="20">
-            <img src="img/bag.png" alt="bag">
-        </div>
-    </div>
-</div>`},)
-createCartItem(cart, filteredItems)    
+    filteredItems.forEach(element => { field.innerHTML += itemHTML(element)})
+    createCartItem(cart, filteredItems, filteredItems)
 }
