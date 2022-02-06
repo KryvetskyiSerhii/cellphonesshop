@@ -21,7 +21,7 @@ let itemsArray = [{
         price: 498,
         id: '2',
         img: 'img/phones/cats62.jpg',
-     },
+    },
     {
         name: 'One Plus NORD N200 5G',
         price: 216,
@@ -136,13 +136,13 @@ let totalPages = Math.ceil(itemsArray.length / perPage)
 let active
 let items = []
 
-function createPagination (totalPages) {
-for (let i = 1; i <= totalPages; i++) {
-    let liTag = document.createElement('li')
-    liTag.innerHTML = i
-    element.appendChild(liTag)
-    items.push(liTag)
-}
+function createPagination(totalPages) {
+    for (let i = 1; i <= totalPages; i++) {
+        let liTag = document.createElement('li')
+        liTag.innerHTML = i
+        element.appendChild(liTag)
+        items.push(liTag)
+    }
 }
 
 createPagination(totalPages)
@@ -151,19 +151,19 @@ createPaginationItem()
 
 const cart = document.querySelectorAll('.item-phones__cart')
 
-function createPaginationItem () {
-items.forEach ( item => {
-    item.addEventListener('click', function () {
-        createItem(this)
-        const cart = document.querySelectorAll('.item-phones__cart')
-        const pageNum = parseInt(item.innerHTML)
-        const start = (pageNum - 1) * perPage
-        const end = start + perPage
-        const activeList = itemsArray.slice(start, end)
-        createCartItem(cart, activeList, activeList)
-    })
+function createPaginationItem() {
+    items.forEach(item => {
+        item.addEventListener('click', function () {
+            createItem(this)
+            const cart = document.querySelectorAll('.item-phones__cart')
+            const pageNum = parseInt(item.innerHTML)
+            const start = (pageNum - 1) * perPage
+            const end = start + perPage
+            const activeList = itemsArray.slice(start, end)
+            createCartItem(cart, activeList, activeList)
+        })
 
-})
+    })
 }
 
 function itemHTML(item) {
@@ -199,16 +199,53 @@ function createItem(item) {
     })
 }
 
- 
-function createCartItem(cart, itemList, arrayList){
-    const cart = document.querySelectorAll('.item-phones__cart')
+function createFilteredItem(item) {
+    const pageNum = parseInt(item.innerHTML)
+    const start = (pageNum - 1) * perPage
+    const end = start + perPage
+    const activeList = filteredItems.slice(start, end)
+    if (active) {
+        active.classList.remove('active')
+    }
+    active = item
+    item.classList.add('active')
+    field.innerHTML = ''
+    activeList.forEach(note => {
+        field.innerHTML += itemHTML(note)
+    })
+}
+
+function createPaginationFilteredItem() {
+    items.forEach(item => {
+        item.addEventListener('click', function () {
+            const pageNum = parseInt(item.innerHTML)
+            const start = (pageNum - 1) * perPage
+            const end = start + perPage
+            const activeList = filteredItems.slice(start, end)
+            if (active) {
+                active.classList.remove('active')
+            }
+            active = item
+            item.classList.add('active')
+            field.innerHTML = ''
+            activeList.forEach(note => {
+                field.innerHTML += itemHTML(note)
+            })
+        })
+
+    })
+}
+
+
+function createCartItem(cart, itemList, arrayList) {
+    cart = document.querySelectorAll('.item-phones__cart')
     for (let i = 0; i < cart.length; i++) {
-    cart[i].addEventListener('click', () => {
-        addToCart(itemList[i])
-        const liTag = document.createElement('li')
-        liTag.classList.add('modal__list-item')
-        liTag.setAttribute('id', arrayList[i].id)
-        liTag.innerHTML = `<div class="modal__block">
+        cart[i].addEventListener('click', () => {
+            addToCart(itemList[i])
+            const liTag = document.createElement('li')
+            liTag.classList.add('modal__list-item')
+            liTag.setAttribute('id', arrayList[i].id)
+            liTag.innerHTML = `<div class="modal__block">
         <div class="modal__image">
             <img src="${itemList[i].img}" alt="">
         </div>
@@ -218,9 +255,9 @@ function createCartItem(cart, itemList, arrayList){
             <img src="img/trash.png" alt="">
         </div>
         </div>`
-        modalList.appendChild(liTag)
-   })
-}
+            modalList.appendChild(liTag)
+        })
+    }
 }
 
 createCartItem(cart, itemsArray, itemsArray)
@@ -231,10 +268,10 @@ createCartItem(cart, itemsArray, itemsArray)
 function addToCart(product) {
     totalPrice += product.price
     cartPrice.innerHTML = `$${totalPrice}`
-        
+
 }
 
-function removeItem (itemid) {
+function removeItem(itemid) {
     const item = document.getElementById(itemid)
     modalList.removeChild(item)
     let deleteItems = itemsArray.filter(e => e.id == itemid)
@@ -252,7 +289,7 @@ closeButton.addEventListener('click', () => {
 
 //  search
 const searchField = document.querySelector('.search__input')
-let searchResult =''
+let searchResult = ''
 
 searchField.addEventListener('input', e => {
     searchResult = e.target.value
@@ -263,18 +300,50 @@ searchField.addEventListener('input', e => {
         field.innerHTML = ''
         createItem(items[0])
         createCartItem(cart, itemsArray, itemsArray)
-    }
-    else {
-    showSearchResult()
+    } else {
+        showSearchResult()
     }
 })
 
-function showSearchResult () {
+
+function showSearchResult() {
     field.innerHTML = ''
-    let filteredItems = itemsArray.filter( element => element.name.toLowerCase().includes(searchResult.toLowerCase()))
+    let filteredItems = itemsArray.filter(element => element.name.toLowerCase().includes(searchResult.toLowerCase()))
     let totalPages = Math.ceil(filteredItems.length / perPage)
     element.innerHTML = ''
     createPagination(totalPages)
-    filteredItems.forEach(element => { field.innerHTML += itemHTML(element)})
+    const pageNum = parseInt(items[0].innerHTML)
+    const start = (pageNum - 1) * perPage
+    const end = start + perPage
+    const activeList = filteredItems.slice(start, end)
+    if (active) {
+        active.classList.remove('active')
+    }
+    active = items[0]
+    items[0].classList.add('active')
+    field.innerHTML = ''
+    activeList.forEach(note => {
+        field.innerHTML += itemHTML(note)
+    })
+    items.forEach(item => {
+        item.addEventListener('click', function () {
+            const pageNum = parseInt(item.innerHTML)
+            const start = (pageNum - 1) * perPage
+            const end = start + perPage
+            const activeList = filteredItems.slice(start, end)
+            if (active) {
+                active.classList.remove('active')
+            }
+            active = item
+            item.classList.add('active')
+            field.innerHTML = ''
+            activeList.forEach(note => {
+                field.innerHTML += itemHTML(note)
+            })
+            createCartItem(cart, activeList, activeList)
+        })
+
+    })
     createCartItem(cart, filteredItems, filteredItems)
+
 }
